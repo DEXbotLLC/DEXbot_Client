@@ -1,0 +1,34 @@
+# Version Checksums
+
+A checksum is a technique used to determine the authenticity of data by running a value through a hashing algorithm. If you havent installed DEXbot yet, you can [download the client application or compile from the source code](https://github.com/DEXbotLLC/DEXbot_Client/wiki/2.-Installation).
+
+a are established by the running a checksum validator on the binary file generated from the downloaded source code. After compiling a binary from the source code, or downloading the binary directly in [Releases](../../releases), open a terminal prompt, navigate to the folder containing the binary file, and run the following command to display the checksum of the DEXbot client application
+
+<br>
+<br>
+
+**After downloading the application, it is very important to check the checksum of the binary before running it.** This ensures that the code you have compiled is safe and not has not been changed. Navigate to the folder with the compiled DEXbot application and run the following command.
+
+<br>
+
+| Operating System | Command |
+| --------| ------------ |
+|   Linux   | `sha256sum dexbot`   |
+|   MacOS   | `openssl sha256 dexbot-mac`   |
+|   Windows  | `certutil -hashfile dexbot-windows.exe SHA256`   |
+
+<br>
+<br>
+
+Once you have the checksum value, you will need to verify that it is the correct value. Compare your value to the matching official version checksum below. 
+
+<br>
+
+## Release Date / Checksums
+
+| Version |       OS         | Supported | Checksum                                                          |
+| --------| ---------------- | ------------------- | ----------------------------------------------------------------- | 
+| 1.0.0   |      Linux       |  :heavy_check_mark: |`9cf3f42ee56a29eeb18e057806e9f246dcf9117c62c4e5225f8d4be2fcac5944` | 
+| 1.0.0   |      MacOS       |  :heavy_check_mark: |`eb34e9bbf0f8739d5f65d8474721b395960dd4634a6a2888e4e8543b8a4ee661` | 
+| 1.0.0   |     Windows      |  :heavy_check_mark: |`4512e6c77c10c4840439dc3c944d2503ae03412998f8fdacfb53a0d6c51d3427` | 
+
