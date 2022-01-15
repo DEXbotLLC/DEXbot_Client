@@ -2,7 +2,7 @@
 <br />
 <div align="center">
   <a href="#">
-    <img src="https://github.com/DEXbotLLC/client/blob/main/assets/image.png" alt="Logo" width="600">
+    <img src="https://github.com/DEXbotLLC/DEXbot_Client/blob/main/assets/image.png" alt="Logo" width="600">
   </a>
 
   **<p align="center">The sidecar to your cryptocurrency wallet</p>**
