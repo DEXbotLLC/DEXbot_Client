@@ -11,7 +11,8 @@
     <a href="https://dexbot.io"><strong>Create an account on DEXbot.io »</strong></a>
   </h3>
   <h3 align="center">
-    <a href="https://github.com/DEXbotLLC/DEXbot_Client/wiki"><strong>Read the Docs to Get Started »</strong></a>
+    <a href="https://github.com/DEXbotLLC/DEXbot_Client/wiki"><strong>Read the Docs to Get Started »</strong></a><br><br>
+<a href="https://github.com/DEXbotLLC/DEXbot_Client/blob/main/DEXbot_White_Paper.pdf"><strong>Check Out The Whitepaper »</strong></a>
   </h3>
 </div>
 <br>
