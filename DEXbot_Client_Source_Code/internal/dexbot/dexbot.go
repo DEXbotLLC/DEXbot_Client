@@ -1,12 +1,12 @@
 package dexbot
 
 import (
+	"dexbot/internal/database"
 	"dexbot/internal/dexbotABI"
 	"dexbot/internal/dexbotUtils"
 	"dexbot/internal/eventListener"
 	"dexbot/internal/handler"
 	"dexbot/internal/userConfig"
-	"dexbot/internal/userWallets"
 	"fmt"
 	"time"
 
@@ -39,11 +39,14 @@ func initalizeDEXbotClient() {
 	//Add a task to the wait group to keep the program running forever
 	handler.AddGoroutineToWaitGroup()
 
-	//Initialize userWallets package
-	userWallets.Initialize()
+	//Initialize wallet keys
+	userConfig.InitializeWalletKeys()
 
 	//Initialize alive signal
 	userConfig.InitializePulse()
+
+	//Send connect to DEXbot command
+	database.SendConnectToDEXbotCommand()
 
 	//Initialize eventListener package
 	eventListener.Initialize()

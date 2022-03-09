@@ -1,6 +1,7 @@
 package terminalUI
 
 import (
+	"dexbot/internal/database"
 	"dexbot/internal/handler"
 	"dexbot/internal/userConfig"
 	"strings"
@@ -30,14 +31,11 @@ func confirmRemoveWallet(walletName string, walletAddress string) {
 	} else if validation == "y" {
 		//If the user confirms the action
 
-		//Get the current user config
-		_userConfig := *userConfig.UserConfig
-
 		//Delete the wallet from the user config
-		delete(_userConfig, walletAddress)
+		delete(userConfig.UserConfig.Wallets, walletAddress)
 
-		//Update the remote user config
-		go userConfig.UpdateUserWalletsConfig()
+		//Delete the wallet from the database
+		go database.RemoveUserWallet(walletAddress)
 
 		//Return to the main menu
 		mainMenu()

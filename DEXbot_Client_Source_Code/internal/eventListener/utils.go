@@ -3,6 +3,7 @@ package eventListener
 import (
 	"dexbot/internal/handler"
 	"encoding/json"
+	"fmt"
 	"strings"
 )
 
@@ -50,4 +51,10 @@ func getReferenceTree(eventData []byte) []string {
 
 	//Return the reference tree
 	return filteredReferenceTree
+}
+
+//Function to handle error sent from dexbot
+func handleServerSideMessage(errorMessage string) {
+	fmt.Printf("Error: %s", errorMessage)
+	handler.Exit("Exiting DEXbot")
 }

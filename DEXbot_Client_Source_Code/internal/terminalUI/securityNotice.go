@@ -16,7 +16,7 @@ func securityNotice() {
 		terminalCenterPrinter.Sprintf("%s: %s", dexbotUtils.WhitePrinter.Sprintf("MacOS"), dexbotUtils.BluePrinter.Sprintf("openssl sha256 dexbot-mac")),
 		terminalCenterPrinter.Sprintf("%s: %s", dexbotUtils.WhitePrinter.Sprintf("Windows"), dexbotUtils.BluePrinter.Sprintf("certutil -hashfile dexbot-windows.exe SHA256\n")),
 		terminalCenterPrinter.Sprintf(dexbotUtils.WhitePrinter.Sprintf("After running the command, compare the checksum to the checksum on\nthe official DEXbot GitHub repo:\n")),
-		terminalCenterPrinter.Sprintf(dexbotUtils.BluePrinter.Sprintf("https://github.com/DEXbotLLC/DEXbot-client\n")),
+		terminalCenterPrinter.Sprintf(dexbotUtils.BluePrinter.Sprintf("https://github.com/DEXbotLLC/DEXbot_Client\n")),
 		terminalCenterPrinter.Sprintf(dexbotUtils.WhitePrinter.Sprintf("You should only proceed if the values match exactly.\n")),
 		"------------------------------\n",
 		"1.) I have verified the checksum and agree to the terms (https://www.dexbot.io/terms).\n\n",

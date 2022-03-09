@@ -1,11 +1,11 @@
 package terminalUI
 
 import (
+	"dexbot/internal/chain"
 	"dexbot/internal/dexbotUtils"
 	"dexbot/internal/handler"
 	"dexbot/internal/userConfig"
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/pterm/pterm"
@@ -18,32 +18,65 @@ func addANewToken(walletName string, walletAddress string) {
 
 //UI display to select a chain when adding a new token
 func selectAChain(walletName string, walletAddress string) {
+
 	clearTerminal()
+	//Get all of the current token settings as options
+	i := 1
+	options := []string{}
+	optionsMap := make(map[string]map[string]interface{})
+	panels := pterm.Panels{}
+	for _chain := range chain.Chains {
+		//Initialize new sub panel list for UI display
+		subPanelList := []pterm.Panel{}
+		//Create new panel
+		panel := pterm.Panel{}
+		//Add data to the panel
+		panel.Data = terminalCenterPrinter.Sprintf("%v.) %s \n", i, _chain)
+		//Add panel to sub panel list
+		subPanelList = append(subPanelList, panel)
+		//Add sub panel list to panel list
+		panels = append(panels, subPanelList)
+
+		//Add each option to display options and options map
+		options = append(options, fmt.Sprint(i))
+		optionData := make(map[string]interface{})
+		optionData["key"] = _chain
+		optionsMap[fmt.Sprint(i)] = optionData
+
+		//Increment i
+		i += 1
+
+	}
+
+	//Add back as option "0"
+	subPanelList := []pterm.Panel{}
+	panel := pterm.Panel{}
+	panel.Data = terminalCenterPrinter.Sprintf("0.) Back")
+	subPanelList = append(subPanelList, panel)
+	panels = append(panels, subPanelList)
+	options = append(options, "0")
+
+	//Create panel UI display string with all of the options
+	panelDisplayString, _ := pterm.DefaultPanel.WithPanels(panels).Srender()
+
 	//Update the UI to display all of the chain options
 	terminalArea.Update(
 		terminalCenterPrinter.Sprintf("\n"),
 		terminalCenterPrinter.Sprintf("\n"),
 		terminalCenterPrinter.Sprintf(pterm.DefaultHeader.Sprintf("Select a chain")),
 		terminalCenterPrinter.Sprintf("\n"),
-		terminalCenterPrinter.Sprintf("1.) Binance Smart Chain\n"),
-
-		terminalCenterPrinter.Sprintf("0.) Back\n"),
+		panelDisplayString,
 	)
 
-	//Wait for the user to select a chain from the options
-	c := rawTerminalInput([]string{"1", "0"})
-	chains := []string{"BSC"}
-
-	//Parse the user input
-	inputAsInt, err := strconv.ParseInt(c, 0, 32)
-	handler.HandleError("Issue when parsing int during chain selection", err)
+	//Wait for the user input
+	c := rawTerminalInput(options)
 
 	//Evaluate the input
 	switch c {
 
 	//If the user selected a chain option, continue with the UI display to add token details
 	default:
-		addTokenDetails(walletName, walletAddress, chains[inputAsInt-1])
+		addTokenDetails(walletName, walletAddress, optionsMap[c]["key"].(string))
 
 	//If the user selected "Back", return to the UI to select a wallet to configure
 	case "0":
@@ -57,12 +90,12 @@ func addTokenDetails(walletName string, walletAddress string, chainName string) 
 	//Enter the token name
 	tokenName := enterTokenDetails(
 		"Enter the Token Name: ", tokenSettingDescriptions["token_name"],
-		chainName, "", "", "", "", "", "", "", "", "")
+		chainName, "", "", "", "", "", "", "", "")
 
 	//Enter the contract address
 	contractAddress := enterTokenDetails(
 		"Enter the Contract Address: ", tokenSettingDescriptions["contract_address"],
-		chainName, tokenName, "", "", "", "", "", "", "", "")
+		chainName, tokenName, "", "", "", "", "", "", "")
 
 	//Convert address to checksum
 	checksumContractAddress, err := dexbotUtils.ToChecksumAddress(contractAddress)
@@ -71,65 +104,67 @@ func addTokenDetails(walletName string, walletAddress string, chainName string) 
 	//Enter the minimum token balance
 	minimumTokenBalance := enterTokenDetails(
 		"Enter the Minimum Token Balance: ", tokenSettingDescriptions["minimum_token_balance"],
-		chainName, tokenName, checksumContractAddress, "", "", "", "", "", "", "")
+		chainName, tokenName, checksumContractAddress, "", "", "", "", "", "")
 
 	//Enter the minimum 24 hour price change
 	minimum24HourPriceChange := enterTokenDetails(
 		"Enter the Minimum 24 Hour Price Change: ", tokenSettingDescriptions["minimum_24_hour_price_change"],
-		chainName, tokenName, checksumContractAddress, minimumTokenBalance, "", "", "", "", "", "")
+		chainName, tokenName, checksumContractAddress, minimumTokenBalance, "", "", "", "", "")
 
 	//Enter the minimum USD sell price
 	minimumUSDSellPrice := enterTokenDetails(
 		"Enter the Minimum USD sell price: ", tokenSettingDescriptions["minimum_usd_sell_price"],
-		chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, "", "", "", "", "")
+		chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, "", "", "", "")
 
-	//Enter the minimum nato sell amount
-	minimumNatoSellAmount := enterTokenDetails(fmt.Sprintf("Enter the Minimum %s Sell Amount: ", chainNativeTokens[chainName]), tokenSettingDescriptions["minimum_nato_sell_amount"],
-		chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, "", "", "", "")
+	//Enter the minimum USD sell amount
+	minimumUSDSellAmount := enterTokenDetails("Enter the Minimum USD Sell Amount: ", tokenSettingDescriptions["minimum_usd_sell_amount"],
+		chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, "", "", "")
 
-	//Enter the maximum nato sell amount
-	maximumNatoSellAmount := enterTokenDetails(fmt.Sprintf("Enter the Maximum %s Sell Amount: ", chainNativeTokens[chainName]), tokenSettingDescriptions["maximum_nato_sell_amount"],
-		chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, minimumNatoSellAmount, "", "", "")
-
-	//Enter the maximum sell percent of buy transaction
-	maximumSellPercentOfBuyTransaction := enterTokenDetails("Enter the Maximum Sell Percent Of Buy Transaction: ", tokenSettingDescriptions["maximum_sell_percent_of_buy_transaction"],
-		chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, minimumNatoSellAmount, maximumNatoSellAmount, "", "")
+	//Enter the maximum USD sell amount
+	maximumUSDSellAmount := enterTokenDetails("Enter the Maximum USD Sell Amount: ", tokenSettingDescriptions["maximum_usd_sell_amount"],
+		chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, minimumUSDSellAmount, "", "")
 
 	//Enter the minimum time between sells
-	minimumTimeBetweenSells := enterTokenDetails("Enter the Minimum Time Between Sells (seconds): ", tokenSettingDescriptions["minimum_time_in_seconds_between_sells"],
-		chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, minimumNatoSellAmount, maximumNatoSellAmount, maximumSellPercentOfBuyTransaction, "")
+	minimumTimeBetweenSells := enterTokenDetails("Enter the Minimum Time Between Sells (in seconds): ", tokenSettingDescriptions["minimum_time_in_seconds_between_sells"],
+		chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, minimumUSDSellAmount, maximumUSDSellAmount, "")
 
 	//Prompt the user to validate the inputs
-	validateNewTokenInputs(walletName, walletAddress, chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, minimumNatoSellAmount, maximumNatoSellAmount, maximumSellPercentOfBuyTransaction, minimumTimeBetweenSells)
+	validateNewTokenInputs(walletName, walletAddress, chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, minimumUSDSellAmount, maximumUSDSellAmount, minimumTimeBetweenSells)
 }
 
 //Prompt the user to enter the token details for the specified token setting passed into the function
 func enterTokenDetails(inputMessage string, description string, chainName string, tokenName string, checksumContractAddress string, minimumTokenBalance string,
-	minimum24HourPriceChange string, minimumUSDSellPrice string, minimumNatoSellAmount string, maximumNatoSellAmount string,
-	maximumSellPercentOfBuyTransaction string, minimumTimeBetweenSells string) string {
+	minimum24HourPriceChange string, minimumUSDSellPrice string, minimumUSDSellAmount string, maximumUSDSellAmount string, minimumTimeBetweenSells string) string {
 
 	//Update the display to show the token details
 	clearTerminal()
 	terminalArea.Update(
 		terminalPrinter.Sprintf("\n\n"),
 		terminalPrinter.Sprintf(pterm.DefaultHeader.Sprint(description)),
-		terminalPrinter.Sprintf("Token Name: %s\n\nContract Address: %s\n\nMinimum Token Balance: %s\n\nMinimum 24 Hour Price Change: %s\n\nMinimum USD Sell Price: %s\n\nMinimum %s Sell Amount: %s\n\nMaximum %s Sell Amount: %s\n\nMaximum Sell Percent of Buy Transaction: %s\n\nMinimum time between sells (in seconds): %s\n",
-			tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, chainNativeTokens[chainName], minimumNatoSellAmount, chainNativeTokens[chainName], maximumNatoSellAmount, maximumSellPercentOfBuyTransaction, minimumTimeBetweenSells),
+		terminalPrinter.Sprintf("Token Name: %s\n\nContract Address: %s\n\nMinimum Token Balance: %s\n\nMinimum 24 Hour Price Change: %s\n\nMinimum USD Sell Price: %s\n\nMinimum USD Sell Amount: %s\n\nMaximum USD Sell Amount: %s\n\nMinimum time between sells (in seconds): %s\n",
+			tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, minimumUSDSellAmount, maximumUSDSellAmount, minimumTimeBetweenSells),
 	)
 
 	//Wait for the user input to assign a value to the specified setting
 	userInput := handler.Input(inputMessage)
+
+	//If the user inputs the chain wrapped native token, display an error and reprompt the user
+	//Since DEXbot swaps tokens for the wrapped native token, the user can not swap the wrapped native token for the wrapped native token
+	if inputMessage == "Enter the Contract Address: " && userInput == chain.Chains[chainName].WrappedNativeTokenAddress {
+		errorMessageAndInputMessage := "Since DEXbot swaps tokens for the wrapped native token, you can not input the wrapped native token address. Please try again." + inputMessage
+		return enterTokenDetails(errorMessageAndInputMessage, description, chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, minimumUSDSellAmount, maximumUSDSellAmount, minimumTimeBetweenSells)
+	}
 
 	//Return the user input for the specified setting
 	return userInput
 }
 
 //Prompt the user to review and confirm the token settings that they input
-func validateNewTokenInputs(walletName string, walletAddress string, chainName string, tokenName string, checksumContractAddress string, minimumTokenBalance string, minimum24HourPriceChange string, minimumUSDSellPrice string, minimumNatoSellAmount string, maximumNatoSellAmount string, maximumSellPercentOfBuyTransaction string, minimumTimeBetweenSells string) {
+func validateNewTokenInputs(walletName string, walletAddress string, chainName string, tokenName string, checksumContractAddress string, minimumTokenBalance string, minimum24HourPriceChange string, minimumUSDSellPrice string, minimumUSDSellAmount string, maximumUSDSellAmount string, minimumTimeBetweenSells string) {
 
 	//Update the display to show the user input token settings and prompt the user to confirm the settings
 	clearTerminal()
-	validation := enterTokenDetails("y/n: ", "Please confirm the token configuration. y/n", chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, minimumNatoSellAmount, maximumNatoSellAmount, maximumSellPercentOfBuyTransaction, minimumTimeBetweenSells)
+	validation := enterTokenDetails("y/n: ", "Please confirm the token configuration. y/n", chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, minimumUSDSellAmount, maximumUSDSellAmount, minimumTimeBetweenSells)
 	validation = strings.ToLower(validation)
 
 	//If the user does not confirm the settings
@@ -141,50 +176,41 @@ func validateNewTokenInputs(walletName string, walletAddress string, chainName s
 		//^^ If the user confirms the settings
 
 		//Add the token to the user configurations
-		addTokenToUserConfig(walletAddress, chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, minimumNatoSellAmount, maximumNatoSellAmount, maximumSellPercentOfBuyTransaction, minimumTimeBetweenSells)
+		addTokenToUserConfig(walletAddress, chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, minimumUSDSellAmount, maximumUSDSellAmount, minimumTimeBetweenSells)
 
 		//Display the configureWallet UI
 		configureWallet(walletName, walletAddress)
 	} else {
 		//^^ If the user input is not "y" or "n", prompt the user for input again.
-		validateNewTokenInputs(walletName, walletAddress, chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, minimumNatoSellAmount, maximumNatoSellAmount, maximumSellPercentOfBuyTransaction, minimumTimeBetweenSells)
+		validateNewTokenInputs(walletName, walletAddress, chainName, tokenName, checksumContractAddress, minimumTokenBalance, minimum24HourPriceChange, minimumUSDSellPrice, minimumUSDSellAmount, maximumUSDSellAmount, minimumTimeBetweenSells)
 	}
 }
 
 //Add a token to the user configuration
-func addTokenToUserConfig(walletAddress string, chainName string, tokenName string, checksumContractAddress string, minimumTokenBalance string, minimum24HourPriceChange string, minimumUSDSellPrice string, minimumNatoSellAmount string, maximumNatoSellAmount string, maximumSellPercentOfBuyTransaction string, minimumTimeBetweenSells string) {
+func addTokenToUserConfig(walletAddress string, chainName string, tokenName string, checksumContractAddress string, minimumTokenBalance string, minimum24HourPriceChange string, minimumUSDSellPrice string, minimumUSDSellAmount string, maximumUSDSellAmount string, minimumTimeInSecondsBetweenSells string) {
 	//Get the current user configuration values
-	_userConfig := *userConfig.UserConfig
-
-	//Get the wallet configuration for the walletAddress
-	walletData := _userConfig[walletAddress].(map[string]interface{})
+	_userWallet := userConfig.UserConfig.Wallets[walletAddress]
 
 	//If there are no tokens set up, create the tokens map
-	if walletData["tokens"] == nil {
-		walletData["tokens"] = make(map[string]interface{})
+	if len(_userWallet.Tokens) == 0 {
+		_userWallet.Tokens = make(map[string]*userConfig.Token)
 	}
 
-	//Get the token data for the wallet
-	tokens := walletData["tokens"].(map[string]interface{})
-
-	//Initalize a map for the new token config and add the token settings
-	tokenConfig := make(map[string]interface{})
-	tokenConfig["chain_name"] = chainName
-	tokenConfig["token_name"] = tokenName
-	tokenConfig["contract_address"] = checksumContractAddress
-	tokenConfig["minimum_token_balance"] = minimumTokenBalance
-	tokenConfig["minimum_24_hour_price_change"] = minimum24HourPriceChange
-	tokenConfig["minimum_usd_sell_price"] = minimumUSDSellPrice
-	tokenConfig["minimum_nato_sell_amount"] = minimumNatoSellAmount
-	tokenConfig["maximum_nato_sell_amount"] = maximumNatoSellAmount
-	tokenConfig["maximum_sell_percent_of_buy_transaction"] = maximumSellPercentOfBuyTransaction
-	tokenConfig["minimum_time_in_seconds_between_sells"] = minimumTimeBetweenSells
-	tokenConfig["last_sell_timestamp"] = "0"
-
-	//Add the token config to the wallet tokens
-	tokens[checksumContractAddress] = tokenConfig
+	_userWallet.Tokens[checksumContractAddress] = &userConfig.Token{
+		TokenChecksumAddress: checksumContractAddress,
+		TokenConfig: userConfig.CreateTokenConfig(
+			chainName,
+			checksumContractAddress,
+			tokenName,
+			minimumUSDSellAmount,
+			maximumUSDSellAmount,
+			minimum24HourPriceChange,
+			minimumTimeInSecondsBetweenSells,
+			minimumTokenBalance,
+			minimumUSDSellPrice),
+	}
 
 	//Update the remote user config
-	go userConfig.UpdateUserWalletsConfig()
+	go userConfig.UpdateRemoteTokenConfig(walletAddress, checksumContractAddress)
 
 }

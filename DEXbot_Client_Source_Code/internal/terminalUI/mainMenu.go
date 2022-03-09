@@ -10,10 +10,9 @@ import (
 //Display the main menu
 func mainMenu() {
 	clearTerminal()
-	_userConfig := *userConfig.UserConfig
 
 	//If the user has already set up a wallet, display the main menu options
-	if len(_userConfig) > 0 {
+	if len(userConfig.UserConfig.Wallets) > 0 {
 		terminalArea.Update(
 			terminalPrinter.Sprintf("\n"),
 			terminalPrinter.Sprintf("\n"),
@@ -108,10 +107,9 @@ func confirmExitDEXbot() {
 	//If the user denies the action
 	if c == "n" {
 		clearTerminal()
-		_userConfig := *userConfig.UserConfig
 
 		//If the user has a wallet set up already
-		if len(_userConfig) > 0 {
+		if len(userConfig.UserConfig.Wallets) > 0 {
 			//Return to main menu
 			mainMenu()
 		} else {

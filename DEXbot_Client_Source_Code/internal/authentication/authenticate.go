@@ -2,6 +2,7 @@ package authentication
 
 import (
 	"bytes"
+	"dexbot/internal/config"
 	"dexbot/internal/handler"
 	"encoding/json"
 	"fmt"
@@ -17,7 +18,7 @@ var firebaseCreds *firebaseCredentials
 var FirebaseAuthToken *authToken
 
 //API key for the database
-var firebaseAPIKey = "AIzaSyA-ziDHTaIeN2P8d67HIhIdLi3cxlqufic"
+var firebaseAPIKey = config.DatabaseConfig.DatabaseAPIKey
 
 //Channel to notify the program when to refresh the authentication token
 var AuthRefreshChannel chan bool

@@ -10,16 +10,14 @@ import (
 //Display UI to select a wallet to configure
 func selectWalletToConfigure() {
 	clearTerminal()
-	_userConfig := *userConfig.UserConfig
 
 	//Display all of the user wallets as options
 	i := 1
 	options := []string{}
 	optionsMap := make(map[string]map[string]string)
 	panels := pterm.Panels{}
-	for walletAddress, walletData := range _userConfig {
-		walletData := walletData.(map[string]interface{})
-		walletName := walletData["wallet_name"].(string)
+	for walletAddress, walletData := range userConfig.UserConfig.Wallets {
+		walletName := walletData.WalletName
 		//Initialize new sub panel list for UI display
 		subPanelList := []pterm.Panel{}
 		//Create new panel
@@ -78,11 +76,9 @@ func selectWalletToConfigure() {
 //Display UI to add a token, edit a token or delete a token from a wallet
 func configureWallet(walletName string, walletAddress string) {
 	clearTerminal()
-	_userConfig := *userConfig.UserConfig
-	walletData := _userConfig[walletAddress].(map[string]interface{})
 
 	//Display options in the terminal UI
-	if walletData["tokens"] == nil {
+	if len(userConfig.UserConfig.Wallets[walletAddress].Tokens) == 0 {
 		configureWalletWithNoTokens(walletName, walletAddress)
 	} else {
 

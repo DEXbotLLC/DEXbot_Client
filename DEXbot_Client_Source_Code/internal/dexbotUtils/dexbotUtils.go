@@ -18,12 +18,21 @@ import (
 
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/fatih/color"
+	"github.com/shopspring/decimal"
 	"github.com/umbracle/go-web3"
 	"golang.org/x/crypto/sha3"
 )
 
 //Variable to hold the operating system Id for OS specific funcationality compatiblilty
 var OperatingSystem string
+
+var DEXbotClientChecksum string
+
+//Intialize the checksum for the client application
+func initalizeDEXbotChecksum() {
+	//Get the version checksum so DEXbot can validate the integrity of the application
+	DEXbotClientChecksum = RunChecksumOnDEXbotBinary()
+}
 
 //Function to initialize operating system
 func InitializeOperatingSystem() {
@@ -137,6 +146,16 @@ func RunChecksumOnDEXbotBinary() string {
 	}
 }
 
+//Check if a specific string is in a slice
+func StringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
 //Get the sha256 hash of a file
 func sha256sum(filePath string) (string, error) {
 	file, err := os.Open(filePath)
@@ -193,4 +212,11 @@ func UnpackTransactionPayload(transactionData string) *web3.Transaction {
 	}
 
 	return transaction
+}
+
+func StringToInt64(input string) int64 {
+	newDecimal, err := decimal.NewFromString(input)
+	handler.HandleError("handler: StringToInt64: decimal.NewFromString", err)
+	newFloat64, _ := newDecimal.BigFloat().Int64()
+	return newFloat64
 }

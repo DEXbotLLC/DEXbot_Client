@@ -128,6 +128,7 @@ func HandleError(context string, err error) {
 		fmt.Println("Context: ", context)
 		fmt.Println("Error: ", err)
 		fmt.Println("------------------------")
+		//If the user has error reporting enabled, send the error to the DEXbot team
 		if errorReportingBool {
 			SendErrorToDiscord(context, err.Error(), errorReportingUserId)
 		}
@@ -172,16 +173,35 @@ func CheckAuthResponse(authResponse string) {
 }
 
 //Handle the response from an HTTP request
-func CheckHTTPResponse(httpResponse *http.Response) {
-	//If there is an error in the HTTP response
-	if strings.Contains(httpResponse.Status, "4") {
+func CheckHTTPResponse(context string, httpResponse *http.Response, err error) error {
+	//Check if there are any errors when sending the http request
+	if err != nil {
 
-		//Print the error in the terminal
-		fmt.Println(httpResponse)
+		//If the user has error reporting enabled, send the error to the DEXbot team
+		if errorReportingBool {
+			SendErrorToDiscord(context, err.Error(), errorReportingUserId)
+		}
 
-		//Exit the program with a exit message
-		Exit("HTTP response error, exiting program")
+		//return the error
+		return err
+
+	} else {
+		//If there is an error in the HTTP response
+		if strings.Contains(httpResponse.Status, "4") {
+
+			//Print the error in the terminal
+			fmt.Println(httpResponse)
+
+			//If the user has error reporting enabled, send the error to the DEXbot team
+			if errorReportingBool {
+				SendErrorToDiscord(context, err.Error(), errorReportingUserId)
+			}
+
+			//Exit the program with an exit message
+			Exit("HTTP response error, exiting program")
+		}
 	}
+	return nil
 }
 
 //Print a message and terminate the program

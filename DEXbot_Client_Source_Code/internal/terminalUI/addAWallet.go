@@ -1,6 +1,7 @@
 package terminalUI
 
 import (
+	"dexbot/internal/database"
 	"dexbot/internal/dexbotUtils"
 	"dexbot/internal/handler"
 	"dexbot/internal/userConfig"
@@ -77,31 +78,16 @@ func validateNewWalletInputs(walletName string, walletAddress string) {
 		//^^ If the user confirms the settings
 
 		//Add the wallet to the user configurations
-		addWalletToUserConfig(walletName, walletAddress)
+		userConfig.AddWalletToUserConfig(walletName, walletAddress)
+
+		//Add the wallet the the remote user config
+		database.AddWalletToUserConfig(walletAddress, walletName)
 
 		//Display the configureWallet UI
 		configureWallet(walletName, walletAddress)
+
 	} else {
 		//^^ If the user input is not "y" or "n", prompt the user for input again
 		validateNewWalletInputs(walletName, walletAddress)
 	}
-}
-
-//Add a wallet to the user configurations
-func addWalletToUserConfig(walletName string, walletAddress string) {
-	//Get the current user configuration values
-	_userConfig := *userConfig.UserConfig
-
-	//Create a map for the wallet data
-	walletData := make(map[string]interface{})
-
-	//Add the wallet name to the wallet data
-	walletData["wallet_name"] = walletName
-
-	//Add the wallet data to the user config
-	_userConfig[walletAddress] = walletData
-
-	//Update the remote user config
-	go userConfig.UpdateUserWalletsConfig()
-
 }

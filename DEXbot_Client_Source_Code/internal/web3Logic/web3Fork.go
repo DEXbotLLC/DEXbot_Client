@@ -1,9 +1,10 @@
-package web3Fork
+package web3Logic
 
 import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
+	"dexbot/internal/handler"
 	"encoding/hex"
 	"fmt"
 	"math/big"
@@ -14,6 +15,19 @@ import (
 	"github.com/valyala/fastjson"
 	"golang.org/x/crypto/sha3"
 )
+
+//Sign a transaction with a specified wallet key
+func SignTransaction(chainID uint64, txn *web3.Transaction, privateKey *Key) *web3.Transaction {
+	//create a signer object with the bsc mainnet chainID
+	signer := NewEIP155Signer(chainID)
+
+	//sign the transaction
+	signedTx, err := signer.SignTx(txn, privateKey)
+	handler.HandleError("Error: SignTransaction, SignTx", err)
+
+	//return the signed transaction
+	return signedTx
+}
 
 //Key Functions--------------------------------------------
 

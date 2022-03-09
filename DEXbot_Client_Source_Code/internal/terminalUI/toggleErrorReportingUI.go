@@ -10,11 +10,8 @@ import (
 //Initialize the error reporting configruation for the user
 func initializeErrorReporting() {
 	clearTerminal()
-	//Get the current user config
-	_userConfig := *userConfig.UserConfig
-
 	//If the user has not set up a wallet yet
-	if len(_userConfig) == 0 {
+	if len(userConfig.UserConfig.Wallets) == 0 {
 		//Prompt the user to toggle error reporting on or off
 		toggleErrorReporting()
 	}

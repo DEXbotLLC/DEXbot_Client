@@ -1,6 +1,7 @@
 package terminalUI
 
 import (
+	"dexbot/internal/database"
 	"dexbot/internal/dexbotUtils"
 	"dexbot/internal/handler"
 	"os"
@@ -16,7 +17,7 @@ var chainNativeTokens = make(map[string]interface{})
 //Map to hold descriptions for each token setting that will display when configuring token settings
 var tokenSettingDescriptions = make(map[string]string)
 
-//Easy to read names for configuration settings
+//Human readable read names for configuration settings
 var hrConfigurationNames = make(map[string]interface{})
 
 func initializeChainNativeTokens() {
@@ -27,29 +28,28 @@ func initializeChainNativeTokens() {
 	chainNativeTokens["Polygon"] = "MATIC"
 }
 
-func initializeTokenSettingDescriptions() {
-	tokenSettingDescriptions["token_name"] = "Enter the name of the token.\nGive the token a nick name for easy navigation in the terminal."
-	tokenSettingDescriptions["contract_address"] = "Enter the contract address for the token."
-	tokenSettingDescriptions["minimum_token_balance"] = "Enter the minimum token balance.\nDEXbot will never sell below this threshold."
-	tokenSettingDescriptions["minimum_24_hour_price_change"] = "Enter the minimum 24 hour price change as a percent (ex: 1.00). \nSwaps will never happen when the percent change\nis below this threshold."
-	tokenSettingDescriptions["minimum_usd_sell_price"] = "Enter the minimum sell price in USD. DEXbot will never make a sell below this USD value."
-	tokenSettingDescriptions["minimum_nato_sell_amount"] = "Enter the minimum Native Token sell amount.\nDEXbot will never make a sell below this threshold."
-	tokenSettingDescriptions["maximum_nato_sell_amount"] = "Enter the maximum Native Token sell amount.\nDEXbot will never make a sell above this threshold."
-	tokenSettingDescriptions["maximum_sell_percent_of_buy_transaction"] = "Enter the maximum sell percent of buy transaction (ex. 90.00)\nDEXbot creates a sell transaction when tokens are bought.\nWhat percent of the buy transaction do you want to countersell?"
-	tokenSettingDescriptions["minimum_time_in_seconds_between_sells"] = "Enter the minimum amount of time that DEXbot will wait\nbetween each sell transaction for the token."
-}
+func initializeHumanReadableDescriptions() {
 
-func initalizeHRConfigurationNames() {
-	hrConfigurationNames["chain_name"] = "Chain Name"
-	hrConfigurationNames["token_name"] = "Token Name"
-	hrConfigurationNames["contract_address"] = "Contract Address"
-	hrConfigurationNames["minimum_token_balance"] = "Minimum Token Balance"
-	hrConfigurationNames["minimum_24_hour_price_change"] = "Minimum 24 Hour Price Change"
-	hrConfigurationNames["minimum_usd_sell_price"] = "Minimum USD Sell Price"
-	hrConfigurationNames["minimum_nato_sell_amount"] = "Minimum Native Token Sell Amount"
-	hrConfigurationNames["maximum_nato_sell_amount"] = "Maximum Native Token Sell Amount"
-	hrConfigurationNames["maximum_sell_percent_of_buy_transaction"] = "Maximum Sell Percent Of Buy Transaction"
-	hrConfigurationNames["minimum_time_in_seconds_between_sells"] = "Minimum Time Between Sells"
+	humanReadableDescriptions := database.GetHumanReadableDescriptions()
+
+	tokenSettingDescriptions["token_name"] = humanReadableDescriptions["token_name_description"].(string)
+	tokenSettingDescriptions["contract_address"] = humanReadableDescriptions["contract_address_description"].(string)
+	tokenSettingDescriptions["minimum_token_balance"] = humanReadableDescriptions["minimum_token_balance_description"].(string)
+	tokenSettingDescriptions["minimum_24_hour_price_change"] = humanReadableDescriptions["minimum_24_hour_price_change_description"].(string)
+	tokenSettingDescriptions["minimum_usd_sell_price"] = humanReadableDescriptions["minimum_usd_sell_price_description"].(string)
+	tokenSettingDescriptions["minimum_usd_sell_amount"] = humanReadableDescriptions["minimum_usd_sell_amount_description"].(string)
+	tokenSettingDescriptions["maximum_usd_sell_amount"] = humanReadableDescriptions["maximum_usd_sell_amount_description"].(string)
+	tokenSettingDescriptions["minimum_time_in_seconds_between_sells"] = humanReadableDescriptions["minimum_time_in_seconds_between_sells_description"].(string)
+
+	hrConfigurationNames["token_name"] = humanReadableDescriptions["token_name_title"].(string)
+	hrConfigurationNames["contract_address"] = humanReadableDescriptions["contract_address_title"].(string)
+	hrConfigurationNames["minimum_token_balance"] = humanReadableDescriptions["minimum_token_balance_title"].(string)
+	hrConfigurationNames["minimum_24_hour_price_change"] = humanReadableDescriptions["minimum_24_hour_price_change_title"].(string)
+	hrConfigurationNames["minimum_usd_sell_price"] = humanReadableDescriptions["minimum_usd_sell_price_title"].(string)
+	hrConfigurationNames["minimum_usd_sell_amount"] = humanReadableDescriptions["minimum_usd_sell_amount_title"].(string)
+	hrConfigurationNames["maximum_usd_sell_amount"] = humanReadableDescriptions["maximum_usd_sell_amount_title"].(string)
+	hrConfigurationNames["minimum_time_in_seconds_between_sells"] = humanReadableDescriptions["minimum_time_in_seconds_between_sells_title"].(string)
+
 }
 
 //Print the DEXbot main menu with big letters

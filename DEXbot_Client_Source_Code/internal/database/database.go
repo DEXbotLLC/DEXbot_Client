@@ -3,6 +3,7 @@ package database
 import (
 	"bytes"
 	"dexbot/internal/authentication"
+	"dexbot/internal/config"
 	"dexbot/internal/handler"
 	"encoding/json"
 	"fmt"
@@ -14,7 +15,7 @@ import (
 var RTDBClient *http.Client
 
 //Database URL
-var DatabaseURL = "https://dexbot-90461-default-rtdb.firebaseio.com"
+var DatabaseURL = config.DatabaseConfig.DatabaseURL
 
 //Initialize the client that connects to the database
 func initializeRTDBClient() {
@@ -28,9 +29,14 @@ func Get(path string) map[string]interface{} {
 
 	//Send a get request to the database reference with an authenticated url
 	resp, err := RTDBClient.Get(fmt.Sprintf("%s/%s.json?auth=%s", DatabaseURL, path, authentication.FirebaseAuthToken.IdToken))
-	handler.HandleError("database: Get: Get", err)
-	//Close the response after the function ends
+	httpErr := handler.CheckHTTPResponse("database: Get: RTDBClient.Get", resp, err)
+	//Close the body of the response after the function ends
 	defer resp.Body.Close()
+
+	//if there is an error, try again
+	if httpErr != nil {
+		return Get(path)
+	}
 
 	//Convert the response body to bytes
 	dataBytes, err := ioutil.ReadAll(resp.Body)
@@ -57,12 +63,30 @@ func Update(path string, data map[string]interface{}) {
 
 	//Send the PUT request to the database
 	resp, err := RTDBClient.Do(req)
-	handler.HandleError("database: Update: client.Do", err)
+	httpErr := handler.CheckHTTPResponse("database: Update: client.Do", resp, err)
 
-	//Check the response for errors
-	handler.CheckHTTPResponse(resp)
-
-	//Close the body of the response
+	//Close the body of the response after the function ends
 	defer resp.Body.Close()
+
+	//if there is an error, try again
+	if httpErr != nil {
+		Update(path, data)
+	}
+}
+
+func Delete(path string) {
+	//send a DELETE request to the database reference with an authenticated url
+
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s.json?auth=%s", config.DatabaseConfig.DatabaseURL, path, authentication.FirebaseAuthToken.IdToken), nil)
+	handler.HandleError("database: Delete: NewRequest", err)
+
+	resp, err := RTDBClient.Do(req)
+	httpErr := handler.CheckHTTPResponse("database: Delete: client.Do", resp, err)
+	defer resp.Body.Close()
+
+	//if there is an EOF error, try again
+	if httpErr != nil && httpErr.Error() == "EOF" {
+		Delete(path)
+	}
 
 }

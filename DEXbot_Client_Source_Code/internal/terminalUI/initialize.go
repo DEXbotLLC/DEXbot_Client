@@ -2,8 +2,9 @@ package terminalUI
 
 import (
 	"dexbot/internal/authentication"
-	"dexbot/internal/chainOptions"
+	"dexbot/internal/chain"
 	"dexbot/internal/database"
+	"dexbot/internal/dexbotABI"
 	"dexbot/internal/dexbotUtils"
 	"dexbot/internal/handler"
 	"dexbot/internal/userConfig"
@@ -13,12 +14,6 @@ import (
 func InitalizeTerminalUI() {
 	//Get the operating system for OS specific funcationality compatiblilty
 	dexbotUtils.InitializeOperatingSystem()
-	//Initialize the chain options for DEXbot
-	initializeChainNativeTokens()
-	//Initialize Human Readable names for token settings
-	initalizeHRConfigurationNames()
-	//Initialize the descriptions for token settings
-	initializeTokenSettingDescriptions()
 	//Initialize the terminal Display
 	initializeTerminalArea()
 	initializeTerminalCenterPrinter()
@@ -32,8 +27,23 @@ func InitalizeTerminalUI() {
 	authenticateUser()
 	//Initialize the database connection
 	database.Initialize()
-	//Initialize chainOptions package
-	chainOptions.Initialize()
+	//Initialize the chain options for DEXbot
+	initializeChainNativeTokens()
+
+	//Display a message while the client is initializing
+	terminalArea.Update(
+		terminalPrinter.Sprintf("\n\n\n\n"),
+		terminalPrinter.Sprintf(dexbotUtils.GreenPrinter.Sprintf("Initializing DEXbot...")),
+	)
+
+	//Initialize Human Readable names for token settings and descriptions
+	initializeHumanReadableDescriptions()
+	//Initialize the ABIs
+	dexbotABI.Initialize()
+	//Initialize chain options
+	chain.Initialize()
+	//Initialize the client checksum
+	dexbotUtils.Initialize()
 	//Initialize the user configs
 	userConfig.Initialize()
 	//Initialize error reporting setting

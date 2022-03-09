@@ -1,11 +1,17 @@
-package web3Fork
+package web3Logic
 
 import (
 	"crypto/ecdsa"
 
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/umbracle/go-web3"
+	"github.com/umbracle/go-web3/jsonrpc"
 )
+
+type RPCNode struct {
+	NodeURL   string
+	RPCClient *jsonrpc.Client
+}
 
 //Struct to store wallet key details
 type Key struct {
