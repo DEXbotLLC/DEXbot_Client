@@ -28,7 +28,9 @@ Once you have the checksum value, you will need to verify that it is the correct
 
 | Version |       OS         | Supported | Checksum                                                          |
 | --------| ---------------- | ------------------- | ----------------------------------------------------------------- | 
-| 1.0.0   |      Linux       |  :heavy_check_mark: |`9cf3f42ee56a29eeb18e057806e9f246dcf9117c62c4e5225f8d4be2fcac5944` | 
-| 1.0.0   |      MacOS       |  :heavy_check_mark: |`eb34e9bbf0f8739d5f65d8474721b395960dd4634a6a2888e4e8543b8a4ee661` | 
-| 1.0.0   |     Windows      |  :heavy_check_mark: |`4512e6c77c10c4840439dc3c944d2503ae03412998f8fdacfb53a0d6c51d3427` | 
-
+| 0.2.0   |      Linux       |  :white_check_mark: |`bae871d9ed6cbba8ffe809de2420b392bad675e51a7d388dff84ee15b8a872cb` | 
+| 0.2.0   |      MacOS       |  :white_check_mark: |`ff185565f7e981e58b1db5c07a63c245727ddfd20daa773db8d611af0c66faba` | 
+| 0.2.0   |      Windows     |  :white_check_mark: |`ba58701991d9fde4a78a9946fe8bd9f286b7f202b4fb2dbe54a434b60a5913d0` | 
+| 0.1.0   |      Linux       |  :x: |`9cf3f42ee56a29eeb18e057806e9f246dcf9117c62c4e5225f8d4be2fcac5944` | 
+| 0.1.0   |      MacOS       |  :x: |`eb34e9bbf0f8739d5f65d8474721b395960dd4634a6a2888e4e8543b8a4ee661` | 
+| 0.1.0   |      Windows     |  :x: |`4512e6c77c10c4840439dc3c944d2503ae03412998f8fdacfb53a0d6c51d3427` | 
