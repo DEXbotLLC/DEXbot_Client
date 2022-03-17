@@ -2,7 +2,6 @@ package chain
 
 import (
 	"dexbot/internal/dexbotABI"
-	"dexbot/internal/handler"
 	"dexbot/internal/web3Logic"
 	"encoding/json"
 	"io/ioutil"
@@ -34,8 +33,11 @@ func initializeChains() {
 
 func initializeNodeURLs() *NodeURLs {
 	nodeURLsBytes, err := ioutil.ReadFile("internal/config/nodeURLs.json")
-	handler.HandleError("Error when trying to read nodeURL.json", err)
-	nodeURLs := &NodeURLs{}
-	json.Unmarshal(nodeURLsBytes, nodeURLs)
-	return nodeURLs
+	if err != nil {
+		return &DefaultNodeURLs
+	} else {
+		nodeURLs := &NodeURLs{}
+		json.Unmarshal(nodeURLsBytes, nodeURLs)
+		return nodeURLs
+	}
 }
