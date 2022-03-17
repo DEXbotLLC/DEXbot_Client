@@ -28,6 +28,9 @@ Once you have the checksum value, you will need to verify that it is the correct
 
 | Version |       OS         | Supported | Checksum                                                          |
 | --------| ---------------- | ------------------- | ----------------------------------------------------------------- | 
+| 0.2.1   |      Linux       |  :green_circle: |`1547aa615b05b54648138fbd41a8720314bd7ed4fc2b75436e3e2da62eb26bd8` | 
+| 0.2.1   |      MacOS       |  :green_circle: |`5ffdc02959d4004fa2e26da646fbeb3d4dce96e23aeb103dedfc6d6f5444b3f5` | 
+| 0.2.1   |      Windows     |  :green_circle: |`e549e23416740eac71c8d600af26ab43eb437e02d5e425d1b06d4236bfec5a8e` | 
 | 0.2.0   |      Linux       |  :green_circle: |`bae871d9ed6cbba8ffe809de2420b392bad675e51a7d388dff84ee15b8a872cb` | 
 | 0.2.0   |      MacOS       |  :green_circle: |`ff185565f7e981e58b1db5c07a63c245727ddfd20daa773db8d611af0c66faba` | 
 | 0.2.0   |      Windows     |  :green_circle: |`ba58701991d9fde4a78a9946fe8bd9f286b7f202b4fb2dbe54a434b60a5913d0` | 
